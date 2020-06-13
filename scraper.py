@@ -15,7 +15,7 @@ class GetData:
         else:
             self.errors.append(url)
     
-    def multithread_download(self, url_list, headers):
+    def multithread_download(self, url_list, headers = None):
         MAX_THREADS = 300
         threads = min(MAX_THREADS, len(url_list))
         download_data = partial(self.download_data, headers = headers)
