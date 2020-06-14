@@ -11,6 +11,8 @@ jupyterlab = "*"
 requests = "*"
 bs4 = "*"
 pandas = "*"
+xlrd = "*"
+selenium = "*"
 
 [requires]
 python_version = "3.8"
