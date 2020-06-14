@@ -1,6 +1,9 @@
 import requests
 import concurrent.futures
 from functools import partial
+from io import BytesIO
+from zipfile import ZipFile
+import tqdm
 
 class GetData:
     def __init__(self):
@@ -26,3 +29,15 @@ class GetData:
         results = list(results)
 
         return results
+    
+    def unzip_files(self, results):
+        complete_unzipped_results = []
+        for result in tqdm.tqdm(results):
+            zipfile = ZipFile(BytesIO(result.content))
+            zip_names = zipfile.namelist()
+            unzipped_result = [zipfile.open(file_name) for file_name in zip_names]
+            complete_unzipped_results += unzipped_result
+        return complete_unzipped_results
+            
+        
+        
