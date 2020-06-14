@@ -1,20 +1,36 @@
 import requests
 import concurrent.futures
-from functools import partial
+from functools import partial, wraps
 from io import BytesIO
 from zipfile import ZipFile
 import tqdm
+import time
 
+def time_it(func):
+    @wraps(func)
+    def wrapped_func(*args, **kwargs):
+        start = time.time()
+        value = func(*args, **kwargs)
+        end = time.time()
+        duration = end - start
+        if duration >= 60:
+            duration /= 60
+            time_name = "minutes"
+        else:
+            time_name = "seconds"
+        print(f"{func.__name__}: {round(duration,2)} {time_name}")
+        return value
+    return wrapped_func
+    
 class GetData:
     def __init__(self):
         self.errors = []
 
-    def download_data(self, url, headers):
+    def download_data(self, url, headers = None):
         resp = requests.get(url, headers = headers)
 
         if resp.status_code == 200:
-            data = resp.text
-            return data
+            return resp
         else:
             self.errors.append(url)
     
@@ -30,14 +46,12 @@ class GetData:
 
         return results
     
+    @time_it
     def unzip_files(self, results):
-        complete_unzipped_results = []
-        for result in tqdm.tqdm(results):
-            zipfile = ZipFile(BytesIO(result.content))
-            zip_names = zipfile.namelist()
-            unzipped_result = [zipfile.open(file_name) for file_name in zip_names]
-            complete_unzipped_results += unzipped_result
-        return complete_unzipped_results
+        zipfile = ZipFile(BytesIO(results.content))
+        zip_names = zipfile.namelist()
+        unzipped_result = [zipfile.open(file_name) for file_name in zip_names]
+        return unzipped_result
             
         
         

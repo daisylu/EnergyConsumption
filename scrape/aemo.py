@@ -1,6 +1,6 @@
 import pandas as pd
 import datetime
-from scraper import GetData
+from scrape.scraper import GetData
 
 class AEMO(GetData):
     def __init__(self, regions, years):
@@ -34,7 +34,8 @@ class AEMO(GetData):
             date_str = None
         return date_str
 
-    def parse_aemo_data(self, resp_text):
+    def parse_aemo_data(self, resp):
+        resp_text = resp.text
         # convert to df
         data = pd.DataFrame([row.split(",") for row in resp_text.split("\r\n")])
         final_df = data.iloc[1:].copy()
